@@ -119,7 +119,7 @@ def parse_file(file_lines_list):
   
   return doc
 
-def docs_to_csv(file, doc_list):
+def docs_to_csv(file, doc_list, tables = ['CPS', 'Conc.']):
 
   if type(file) == str:
     csvfile = open(file, 'w', newline='')
@@ -136,10 +136,10 @@ def docs_to_csv(file, doc_list):
     header = doc_header_fields
     row = [doc['header'][header_field] for header_field in doc_header_fields]
     
-    for test_type in ['CPS', 'Conc.']:
+    for test_type in tables:
       for element in sorted(doc['results'][test_type].keys()):
         for k in sorted(doc['results'][test_type][element].keys()):
-          row += [doc['results'][test_type][element][k]]
+          row += [str(doc['results'][test_type][element][k]).replace('.',',')]
           header += [f'{test_type}.{element}.{k}'.replace('..', '.')]
     
     # escreve cabeçalho do csv
@@ -154,4 +154,4 @@ if __name__ == '__main__':
   for file_lines_list in files_to_lines():
     doc_list.append(parse_file(file_lines_list))
   
-  docs_to_csv('out.csv', doc_list)
+  docs_to_csv('out.csv', doc_list, tables = ['Conc.'])
