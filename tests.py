@@ -344,25 +344,7 @@ sample_dict_01 = { 'header': { 'Acq Mode': 'Spectrum',
                                   'SD': 0.1087}}}}
 
 
-class TestEddBot(unittest.TestCase):
-  def setUp(self):
-    pass
-
-  def test_extract_numbers(self):
-    res = main.extract_numbers('Be       9        #1        <0.000 ppb          8.556E-5    216.61      3      ')
-    self.assertEqual(res, [9.0, 0.0, 8.556e-05, 216.61, 3.0])
-
-  def test_extract_numbers_dash_and_brackets(self):
-    res = main.extract_numbers('Rh     103        #1       [ 100.0 ppb ]             ---       ---    [ 3 ]   *')
-    self.assertEqual(res, [103.0, 100.0, '---', '---', 3.0])
-
-  def test_extract_numbers_1k(self):
-    # substitui tira separador de milhares
-    res = main.extract_numbers('   Li       7        #1       1,383.195 P             45.03    3.26     1.50')
-    self.assertEqual(res, [7.0, 1383.195, 45.03, 3.26, 1.5])
-
-  def test_parse_file(self):
-    file_lines_array = '''
+file_lines_array = '''
 
 
                     Quantitation Report - Detailed (Text Only)      
@@ -435,13 +417,31 @@ End of Report
 
 
 '''.split('\n')
-    
+
+class TestEddBot(unittest.TestCase):
+  def setUp(self):
+    pass
+
+  def test_extract_numbers(self):
+    res = main.extract_numbers('Be       9        #1        <0.000 ppb          8.556E-5    216.61      3      ')
+    self.assertEqual(res, [9.0, 0.0, 8.556e-05, 216.61, 3.0])
+
+  def test_extract_numbers_dash_and_brackets(self):
+    res = main.extract_numbers('Rh     103        #1       [ 100.0 ppb ]             ---       ---    [ 3 ]   *')
+    self.assertEqual(res, [103.0, 100.0, '---', '---', 3.0])
+
+  def test_extract_numbers_1k(self):
+    # substitui tira separador de milhares
+    res = main.extract_numbers('   Li       7        #1       1,383.195 P             45.03    3.26     1.50')
+    self.assertEqual(res, [7.0, 1383.195, 45.03, 3.26, 1.5])
+
+  def test_parse_file(self):
     res = main.parse_file(file_lines_array)
     #pp.pprint(res)
     expected = sample_dict_01
     self.assertEqual(res, expected)
 
-  def test_extract_numbers(self):
+  def test_docs_to_csv(self):
     writer_file =  io.StringIO()
     main.docs_to_csv(writer_file, [sample_dict_01, sample_dict_01], tables = ['Conc.'])
     content = writer_file.getvalue()
@@ -452,6 +452,59 @@ End of Report
     res = content
 
     expected = b'File Name;Operator Name;Acq Time;Conc.Ag.Conc.;Conc.Ag.Mass;Conc.Ag.RSD(%);Conc.Ag.Rep;Conc.Ag.SD;Conc.Al.Conc.;Conc.Al.Mass;Conc.Al.RSD(%);Conc.Al.Rep;Conc.Al.SD;Conc.As.Conc.;Conc.As.Mass;Conc.As.RSD(%);Conc.As.Rep;Conc.As.SD;Conc.B.Conc.;Conc.B.Mass;Conc.B.RSD(%);Conc.B.Rep;Conc.B.SD;Conc.Ba.Conc.;Conc.Ba.Mass;Conc.Ba.RSD(%);Conc.Ba.Rep;Conc.Ba.SD;Conc.Be.Conc.;Conc.Be.Mass;Conc.Be.RSD(%);Conc.Be.Rep;Conc.Be.SD;Conc.Bi.Conc.;Conc.Bi.Mass;Conc.Bi.RSD(%);Conc.Bi.Rep;Conc.Bi.SD;Conc.Cd.Conc.;Conc.Cd.Mass;Conc.Cd.RSD(%);Conc.Cd.Rep;Conc.Cd.SD;Conc.Co.Conc.;Conc.Co.Mass;Conc.Co.RSD(%);Conc.Co.Rep;Conc.Co.SD;Conc.Cr.Conc.;Conc.Cr.Mass;Conc.Cr.RSD(%);Conc.Cr.Rep;Conc.Cr.SD;Conc.Cu.Conc.;Conc.Cu.Mass;Conc.Cu.RSD(%);Conc.Cu.Rep;Conc.Cu.SD;Conc.Fe.Conc.;Conc.Fe.Mass;Conc.Fe.RSD(%);Conc.Fe.Rep;Conc.Fe.SD;Conc.Hg.Conc.;Conc.Hg.Mass;Conc.Hg.RSD(%);Conc.Hg.Rep;Conc.Hg.SD;Conc.Ir.Conc.;Conc.Ir.Mass;Conc.Ir.RSD(%);Conc.Ir.Rep;Conc.Ir.SD;Conc.Li.Conc.;Conc.Li.Mass;Conc.Li.RSD(%);Conc.Li.Rep;Conc.Li.SD;Conc.Mn.Conc.;Conc.Mn.Mass;Conc.Mn.RSD(%);Conc.Mn.Rep;Conc.Mn.SD;Conc.Mo.Conc.;Conc.Mo.Mass;Conc.Mo.RSD(%);Conc.Mo.Rep;Conc.Mo.SD;Conc.Ni.Conc.;Conc.Ni.Mass;Conc.Ni.RSD(%);Conc.Ni.Rep;Conc.Ni.SD;Conc.Pb.Conc.;Conc.Pb.Mass;Conc.Pb.RSD(%);Conc.Pb.Rep;Conc.Pb.SD;Conc.Rh.Conc.;Conc.Rh.Mass;Conc.Rh.RSD(%);Conc.Rh.Rep;Conc.Rh.SD;Conc.Sb.Conc.;Conc.Sb.Mass;Conc.Sb.RSD(%);Conc.Sb.Rep;Conc.Sb.SD;Conc.Se.Conc.;Conc.Se.Mass;Conc.Se.RSD(%);Conc.Se.Rep;Conc.Se.SD;Conc.Si.Conc.;Conc.Si.Mass;Conc.Si.RSD(%);Conc.Si.Rep;Conc.Si.SD;Conc.Sn.Conc.;Conc.Sn.Mass;Conc.Sn.RSD(%);Conc.Sn.Rep;Conc.Sn.SD;Conc.Ti.Conc.;Conc.Ti.Mass;Conc.Ti.RSD(%);Conc.Ti.Rep;Conc.Ti.SD;Conc.Tl.Conc.;Conc.Tl.Mass;Conc.Tl.RSD(%);Conc.Tl.Rep;Conc.Tl.SD;Conc.U.Conc.;Conc.U.Mass;Conc.U.RSD(%);Conc.U.Rep;Conc.U.SD;Conc.V.Conc.;Conc.V.Mass;Conc.V.RSD(%);Conc.V.Rep;Conc.V.SD;Conc.Zn.Conc.;Conc.Zn.Mass;Conc.Zn.RSD(%);Conc.Zn.Rep;Conc.Zn.SD\r\n29A.D;Juliana;Dec 7 2021  05:35 pm;0,004247;107,0;8,07;3,0;0,0003428;2,585;27,0;1,02;3,0;0,02644;;;;;;;;;;;;;;;;0,0;9,0;216,61;3,0;8,556e-05;100,0;209,0;---;3,0;---;;;;;;;;;;;;;;;;;;;;;;;;;;1,33;201,0;0,61;3,0;0,008084;100,0;193,0;---;3,0;---;0,01798;7,0;8,1;3,0;0,001457;;;;;;;;;;;;;;;;;;;;;100,0;103,0;---;3,0;---;0,01294;121,0;6,5;3,0;0,0008407;;;;;;;;;;;0,2165;118,0;3,13;3,0;0,006786;;;;;;0,09938;205,0;1,64;3,0;0,001628;0,00157;238,0;20,11;3,0;0,0003158;;;;;;34,64;66,0;0,31;3,0;0,1087\r\n29A.D;Juliana;Dec 7 2021  05:35 pm;0,004247;107,0;8,07;3,0;0,0003428;2,585;27,0;1,02;3,0;0,02644;;;;;;;;;;;;;;;;0,0;9,0;216,61;3,0;8,556e-05;100,0;209,0;---;3,0;---;;;;;;;;;;;;;;;;;;;;;;;;;;1,33;201,0;0,61;3,0;0,008084;100,0;193,0;---;3,0;---;0,01798;7,0;8,1;3,0;0,001457;;;;;;;;;;;;;;;;;;;;;100,0;103,0;---;3,0;---;0,01294;121,0;6,5;3,0;0,0008407;;;;;;;;;;;0,2165;118,0;3,13;3,0;0,006786;;;;;;0,09938;205,0;1,64;3,0;0,001628;0,00157;238,0;20,11;3,0;0,0003158;;;;;;34,64;66,0;0,31;3,0;0,1087\r\n'
+
+    self.assertEqual(res, expected)
+
+  def test_parse_file_custom_cons_and_cps_keys(self):
+    res = main.parse_file(file_lines_array, cons_keys = ['Conc.'], cps_keys = [], cons_elements = ['Ag', 'Al', 'As', 'B', 'Ba', 'Be', 'Cd', 'Co', 'Cr', 'Cu', 'Fe', 'Hg', 'Li', 'Mn', 'Mo', 'Ni', 'Pb', 'Sb', 'Se', 'Si', 'Sn', 'Ti', 'Tl', 'U', 'V', 'Zn'], cps_elements = [])
+    expected = {'results': { 'CPS': { },
+               'Conc.': { 'Ag': { 'Conc.': 0.004247},
+                          'Al': { 'Conc.': 2.585},
+                          'As': { 'Conc.': ''},
+                          'B': { 'Conc.': ''},
+                          'Ba': { 'Conc.': ''},
+                          'Be': { 'Conc.': 0.0},
+                          'Cd': { 'Conc.': ''},
+                          'Co': { 'Conc.': ''},
+                          'Cr': { 'Conc.': ''},
+                          'Cu': { 'Conc.': ''},
+                          'Fe': { 'Conc.': ''},
+                          'Hg': { 'Conc.': 1.33},
+                          'Li': { 'Conc.': 0.01798},
+                          'Mn': { 'Conc.': ''},
+                          'Mo': { 'Conc.': ''},
+                          'Ni': { 'Conc.': ''},
+                          'Pb': { 'Conc.': ''},
+                          'Sb': { 'Conc.': 0.01294},
+                          'Se': { 'Conc.': ''},
+                          'Si': { 'Conc.': ''},
+                          'Sn': { 'Conc.': 0.2165},
+                          'Ti': { 'Conc.': ''},
+                          'Tl': { 'Conc.': 0.09938},
+                          'U': { 'Conc.': 0.00157},
+                          'V': { 'Conc.': ''},
+                          'Zn': { 'Conc.': 34.64}}}}
+
+    self.assertEqual(res['results'], expected['results'])
+    #pp.pprint(res)
+
+  def test_docs_to_matrix(self):
+    matrix = main.docs_to_matrix([sample_dict_01, sample_dict_01], tables = ['Conc.'])
+    expected = [['File Name', 'Operator Name', 'Acq Time', 'Conc.Ag.Conc.', 'Conc.Ag.Mass', 'Conc.Ag.RSD(%)', 'Conc.Ag.Rep', 'Conc.Ag.SD', 'Conc.Al.Conc.', 'Conc.Al.Mass', 'Conc.Al.RSD(%)', 'Conc.Al.Rep', 'Conc.Al.SD', 'Conc.As.Conc.', 'Conc.As.Mass', 'Conc.As.RSD(%)', 'Conc.As.Rep', 'Conc.As.SD', 'Conc.B.Conc.', 'Conc.B.Mass', 'Conc.B.RSD(%)', 'Conc.B.Rep', 'Conc.B.SD', 'Conc.Ba.Conc.', 'Conc.Ba.Mass', 'Conc.Ba.RSD(%)', 'Conc.Ba.Rep', 'Conc.Ba.SD', 'Conc.Be.Conc.', 'Conc.Be.Mass', 'Conc.Be.RSD(%)', 'Conc.Be.Rep', 'Conc.Be.SD', 'Conc.Bi.Conc.', 'Conc.Bi.Mass', 'Conc.Bi.RSD(%)', 'Conc.Bi.Rep', 'Conc.Bi.SD', 'Conc.Cd.Conc.', 'Conc.Cd.Mass', 'Conc.Cd.RSD(%)', 'Conc.Cd.Rep', 'Conc.Cd.SD', 'Conc.Co.Conc.', 'Conc.Co.Mass', 'Conc.Co.RSD(%)', 'Conc.Co.Rep', 'Conc.Co.SD', 'Conc.Cr.Conc.', 'Conc.Cr.Mass', 'Conc.Cr.RSD(%)', 'Conc.Cr.Rep', 'Conc.Cr.SD', 'Conc.Cu.Conc.', 'Conc.Cu.Mass', 'Conc.Cu.RSD(%)', 'Conc.Cu.Rep', 'Conc.Cu.SD', 'Conc.Fe.Conc.', 'Conc.Fe.Mass', 'Conc.Fe.RSD(%)', 'Conc.Fe.Rep', 'Conc.Fe.SD', 'Conc.Hg.Conc.', 'Conc.Hg.Mass', 'Conc.Hg.RSD(%)', 'Conc.Hg.Rep', 'Conc.Hg.SD', 'Conc.Ir.Conc.', 'Conc.Ir.Mass', 'Conc.Ir.RSD(%)', 'Conc.Ir.Rep', 'Conc.Ir.SD', 'Conc.Li.Conc.', 'Conc.Li.Mass', 'Conc.Li.RSD(%)', 'Conc.Li.Rep', 'Conc.Li.SD', 'Conc.Mn.Conc.', 'Conc.Mn.Mass', 'Conc.Mn.RSD(%)', 'Conc.Mn.Rep', 'Conc.Mn.SD', 'Conc.Mo.Conc.', 'Conc.Mo.Mass', 'Conc.Mo.RSD(%)', 'Conc.Mo.Rep', 'Conc.Mo.SD', 'Conc.Ni.Conc.', 'Conc.Ni.Mass', 'Conc.Ni.RSD(%)', 'Conc.Ni.Rep', 'Conc.Ni.SD', 'Conc.Pb.Conc.', 'Conc.Pb.Mass', 'Conc.Pb.RSD(%)', 'Conc.Pb.Rep', 'Conc.Pb.SD', 'Conc.Rh.Conc.', 'Conc.Rh.Mass', 'Conc.Rh.RSD(%)', 'Conc.Rh.Rep', 'Conc.Rh.SD', 'Conc.Sb.Conc.', 'Conc.Sb.Mass', 'Conc.Sb.RSD(%)', 'Conc.Sb.Rep', 'Conc.Sb.SD', 'Conc.Se.Conc.', 'Conc.Se.Mass', 'Conc.Se.RSD(%)', 'Conc.Se.Rep', 'Conc.Se.SD', 'Conc.Si.Conc.', 'Conc.Si.Mass', 'Conc.Si.RSD(%)', 'Conc.Si.Rep', 'Conc.Si.SD', 'Conc.Sn.Conc.', 'Conc.Sn.Mass', 'Conc.Sn.RSD(%)', 'Conc.Sn.Rep', 'Conc.Sn.SD', 'Conc.Ti.Conc.', 'Conc.Ti.Mass', 'Conc.Ti.RSD(%)', 'Conc.Ti.Rep', 'Conc.Ti.SD', 'Conc.Tl.Conc.', 'Conc.Tl.Mass', 'Conc.Tl.RSD(%)', 'Conc.Tl.Rep', 'Conc.Tl.SD', 'Conc.U.Conc.', 'Conc.U.Mass', 'Conc.U.RSD(%)', 'Conc.U.Rep', 'Conc.U.SD', 'Conc.V.Conc.', 'Conc.V.Mass', 'Conc.V.RSD(%)', 'Conc.V.Rep', 'Conc.V.SD', 'Conc.Zn.Conc.', 'Conc.Zn.Mass', 'Conc.Zn.RSD(%)', 'Conc.Zn.Rep', 'Conc.Zn.SD'], ['29A.D', 'Juliana', 'Dec 7 2021  05:35 pm', 0.004247, 107.0, 8.07, 3.0, 0.0003428, 2.585, 27.0, 1.02, 3.0, 0.02644, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0.0, 9.0, 216.61, 3.0, 8.556e-05, 100.0, 209.0, '---', 3.0, '---', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 1.33, 201.0, 0.61, 3.0, 0.008084, 100.0, 193.0, '---', 3.0, '---', 0.01798, 7.0, 8.1, 3.0, 0.001457, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 100.0, 103.0, '---', 3.0, '---', 0.01294, 121.0, 6.5, 3.0, 0.0008407, '', '', '', '', '', '', '', '', '', '', 0.2165, 118.0, 3.13, 3.0, 0.006786, '', '', '', '', '', 0.09938, 205.0, 1.64, 3.0, 0.001628, 0.00157, 238.0, 20.11, 3.0, 0.0003158, '', '', '', '', '', 34.64, 66.0, 0.31, 3.0, 0.1087], ['29A.D', 'Juliana', 'Dec 7 2021  05:35 pm', 0.004247, 107.0, 8.07, 3.0, 0.0003428, 2.585, 27.0, 1.02, 3.0, 0.02644, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0.0, 9.0, 216.61, 3.0, 8.556e-05, 100.0, 209.0, '---', 3.0, '---', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 1.33, 201.0, 0.61, 3.0, 0.008084, 100.0, 193.0, '---', 3.0, '---', 0.01798, 7.0, 8.1, 3.0, 0.001457, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 100.0, 103.0, '---', 3.0, '---', 0.01294, 121.0, 6.5, 3.0, 0.0008407, '', '', '', '', '', '', '', '', '', '', 0.2165, 118.0, 3.13, 3.0, 0.006786, '', '', '', '', '', 0.09938, 205.0, 1.64, 3.0, 0.001628, 0.00157, 238.0, 20.11, 3.0, 0.0003158, '', '', '', '', '', 34.64, 66.0, 0.31, 3.0, 0.1087]]
+    self.assertEqual(matrix, expected)
+
+  def test_agrupar_matrix_por_arquivo(self):
+    matrix = [['File Name', 'Operator Name', 'Acq Time', 'x', 'y'],
+              ['A', 'J', 'Dec 3 2021  10:12 pm', 1, ''],
+              ['B', 'J', 'Dec 13 2021  10:12 pm', '', 2],
+              ['A', 'J', 'Dec 7 2021  10:12 am', '', 3],
+              ['B', 'J', 'Dec 2 2021  10:12 am', 4, '']]
+
+    expected = [['File Name', 'Operator Name', 'Acq Time', 'x', 'y'],
+                ['A', 'J', 'Dec 3 2021  10:12 pm', 1, 3],
+                ['B', 'J', 'Dec 2 2021  10:12 am', 4, 2]]
+
+    res = main.agrupar_matrix_por_arquivo(matrix)
 
     self.assertEqual(res, expected)
 

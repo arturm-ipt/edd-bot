@@ -131,3 +131,4 @@ dmypy.json
 in/*
 python
 out.csv
+out_desagrupado.csv
